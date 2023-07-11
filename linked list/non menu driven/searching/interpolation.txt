@@ -1,0 +1,30 @@
+#include <stdio.h>
+
+int interpolationSearch(int arr[], int n, int key) {
+    int low = 0;
+    int high = n - 1;
+    while (low <= high && key >= arr[low] && key <= arr[high]) {
+        int pos = low + ((key - arr[low]) * (high - low)) / (arr[high] - arr[low]);
+        if (arr[pos] == key) {
+            return pos;
+        } else if (arr[pos] < key) {
+            low = pos + 1;
+        } else {
+            high = pos - 1;
+        }
+    }
+    return -1; // Element not found
+}
+
+int main() {
+    int arr[] = {2, 4, 6, 8, 10};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int key = 6;
+    int index = interpolationSearch(arr, n, key);
+    if (index != -1) {
+        printf("Element found at index %d\n", index);
+    } else {
+        printf("Element not found\n");
+    }
+    return 0;
+}

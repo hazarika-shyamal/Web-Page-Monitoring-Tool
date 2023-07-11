@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 5
+
+struct CircularQueue {
+    int arr[MAX_SIZE];
+    int front;
+    int rear;
+};
+
+void initializeQueue(struct CircularQueue* queue) {
+    queue->front = -1;
+    queue->rear = -1;
+}
+
+int isEmpty(struct CircularQueue* queue) {
+    return (queue->front == -1);
+}
+
+int isFull(struct CircularQueue* queue) {
+    return ((queue->rear + 1) % MAX_SIZE == queue->front);
+}
+
+void enqueue(struct CircularQueue* queue, int data) {
+    if (isFull(queue)) {
+        printf("Queue is full! Cannot perform enqueue operation.\n");
+        return;
+    }
+    if (isEmpty(queue))
+        queue->front = 0;
+    queue->rear = (queue->rear + 1) % MAX_SIZE;
+    queue->arr[queue->rear] = data;
+    printf("Enqueued element: %d\n", data);
+}
+
+void dequeue(struct CircularQueue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty! Cannot perform dequeue operation.\n");
+        return;
+    }
+    int dequeuedElement = queue->arr[queue->front];
+    if (queue->front == queue->rear) {
+        queue->front = -1;
+        queue->rear = -1;
+    } else {
+        queue->front = (queue->front + 1) % MAX_SIZE;
+    }
+    printf("Dequeued element: %d\n", dequeuedElement);
+}
+
+int peek(struct CircularQueue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty! Cannot perform peek operation.\n");
+        return -1;
+    }
+    return queue->arr[queue->front];
+}
+
+int search(struct CircularQueue* queue, int key) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty! Cannot perform search operation.\n");
+        return -1;
+    }
+    int position = 1;
+    int index = queue->front;
+    while (index != queue->rear) {
+        if (queue->arr[index] == key) {
+            return position;
+        }
+        index = (index + 1) % MAX_SIZE;
+        position++;
+    }
+    if (queue->arr[index] == key) {
+        return position;
+    }
+    return -1;
+}
+
+void display(struct CircularQueue* queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty!\n");
+        return;
+    }
+    printf("Queue elements: ");
+    int index = queue->front;
+    while (index != queue->rear) {
+        printf("%d ", queue->arr[index]);
+        index = (index + 1) % MAX_SIZE;
+    }
+    printf("%d", queue->arr[index]);
+    printf("\n");
+}
+
+int main() {
+    struct CircularQueue queue;
+    initializeQueue(&queue);
+
+    enqueue(&queue, 10);
+    enqueue(&queue, 20);
+    enqueue(&queue, 30);
+    enqueue(&queue, 40);
+
+    display(&queue);
+
+    printf("Front element: %d\n", peek(&queue));
+
+    dequeue(&queue);
+    dequeue(&queue);
+
+    display(&queue);
+
+    printf("Front element: %d\n", peek(&queue));
+
+    int searchKey = 20;
+    int position = search(&queue, searchKey);
+    if (position != -1) {
+        printf("Element %d found at position %d\n", searchKey, position);
+    } else {
+        printf("Element %d not found\n", searchKey);
+    }
+
+    return 0;
+}

@@ -1,0 +1,141 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* prev;
+    struct Node* next;
+};
+
+struct Deque {
+    struct Node* front;
+    struct Node* rear;
+};
+
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed!");
+        exit(0);
+    }
+    newNode->data = data;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void enqueueFront(struct Deque* dq, int data) {
+    struct Node* newNode = createNode(data);
+    if (dq->front == NULL) {
+        dq->front = newNode;
+        dq->rear = newNode;
+    } else {
+        newNode->next = dq->front;
+        dq->front->prev = newNode;
+        dq->front = newNode;
+    }
+    printf("Enqueued element at the front: %d\n", data);
+}
+
+void enqueueRear(struct Deque* dq, int data) {
+    struct Node* newNode = createNode(data);
+    if (dq->rear == NULL) {
+        dq->front = newNode;
+        dq->rear = newNode;
+    } else {
+        newNode->prev = dq->rear;
+        dq->rear->next = newNode;
+        dq->rear = newNode;
+    }
+    printf("Enqueued element at the rear: %d\n", data);
+}
+
+void dequeueFront(struct Deque* dq) {
+    if (dq->front == NULL) {
+        printf("Deque is empty! Cannot perform dequeue from the front operation.\n");
+        return;
+    }
+    struct Node* temp = dq->front;
+    dq->front = dq->front->next;
+    if (dq->front == NULL) {
+        dq->rear = NULL;
+    } else {
+        dq->front->prev = NULL;
+    }
+    printf("Dequeued element from the front: %d\n", temp->data);
+    free(temp);
+}
+
+void dequeueRear(struct Deque* dq) {
+    if (dq->rear == NULL) {
+        printf("Deque is empty! Cannot perform dequeue from the rear operation.\n");
+        return;
+    }
+    struct Node* temp = dq->rear;
+    dq->rear = dq->rear->prev;
+    if (dq->rear == NULL) {
+        dq->front = NULL;
+    } else {
+        dq->rear->next = NULL;
+    }
+    printf("Dequeued element from the rear: %d\n", temp->data);
+    free(temp);
+}
+
+int getFront(struct Deque* dq) {
+    if (dq->front == NULL) {
+        printf("Deque is empty! Cannot get element from the front.\n");
+        return -1;
+    }
+    return dq->front->data;
+}
+
+int getRear(struct Deque* dq) {
+    if (dq->rear == NULL) {
+        printf("Deque is empty! Cannot get element from the rear.\n");
+        return -1;
+    }
+    return dq->rear->data;
+}
+
+void display(struct Deque* dq) {
+    if (dq->front == NULL) {
+        printf("Deque is empty!\n");
+        return;
+    }
+    struct Node* temp = dq->front;
+    printf("Deque elements:\n");
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Deque dq;
+    dq.front = NULL;
+    dq.rear = NULL;
+
+    enqueueFront(&dq, 10);
+    enqueueFront(&dq, 20);
+    enqueueRear(&dq, 30);
+
+    display(&dq);
+
+    printf("Front element: %d\n", getFront(&dq));
+    printf("Rear element: %d\n", getRear(&dq));
+
+    dequeueFront(&dq);
+
+    display(&dq);
+
+    dequeueRear(&dq);
+
+    display(&dq);
+
+    printf("Front element: %d\n", getFront(&dq));
+    printf("Rear element: %d\n", getRear(&dq));
+
+    return 0;
+}

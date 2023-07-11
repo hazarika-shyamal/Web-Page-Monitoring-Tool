@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    int priority;
+    struct Node* next;
+};
+
+struct PriorityQueue {
+    struct Node* front;
+};
+
+struct Node* createNode(int data, int priority) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed!");
+        exit(0);
+    }
+    newNode->data = data;
+    newNode->priority = priority;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void enqueue(struct PriorityQueue* pq, int data, int priority) {
+    struct Node* newNode = createNode(data, priority);
+    if (pq->front == NULL || priority < pq->front->priority) {
+        newNode->next = pq->front;
+        pq->front = newNode;
+    } else {
+        struct Node* temp = pq->front;
+        while (temp->next != NULL && temp->next->priority <= priority) {
+            temp = temp->next;
+        }
+        newNode->next = temp->next;
+        temp->next = newNode;
+    }
+    printf("Enqueued element: %d with priority: %d\n", data, priority);
+}
+
+void dequeue(struct PriorityQueue* pq) {
+    if (pq->front == NULL) {
+        printf("Priority Queue is empty! Cannot perform dequeue operation.\n");
+        return;
+    }
+    struct Node* temp = pq->front;
+    pq->front = pq->front->next;
+    printf("Dequeued element: %d with priority: %d\n", temp->data, temp->priority);
+    free(temp);
+}
+
+int peek(struct PriorityQueue* pq) {
+    if (pq->front == NULL) {
+        printf("Priority Queue is empty! Cannot perform peek operation.\n");
+        return -1;
+    }
+    return pq->front->data;
+}
+
+int search(struct PriorityQueue* pq, int key) {
+    if (pq->front == NULL) {
+        printf("Priority Queue is empty! Cannot perform search operation.\n");
+        return -1;
+    }
+    struct Node* current = pq->front;
+    int position = 1;
+    while (current != NULL) {
+        if (current->data == key) {
+            return position;
+        }
+        current = current->next;
+        position++;
+    }
+    return -1;
+}
+
+void display(struct PriorityQueue* pq) {
+    if (pq->front == NULL) {
+        printf("Priority Queue is empty!\n");
+        return;
+    }
+    printf("Priority Queue elements:\n");
+    struct Node* temp = pq->front;
+    while (temp != NULL) {
+        printf("Data: %d, Priority: %d\n", temp->data, temp->priority);
+        temp = temp->next;
+    }
+}
+
+int main() {
+    struct PriorityQueue pq;
+    pq.front = NULL;
+
+    enqueue(&pq, 10, 2);
+    enqueue(&pq, 20, 1);
+    enqueue(&pq, 30, 3);
+
+    display(&pq);
+
+    printf("Front element: %d\n", peek(&pq));
+
+    dequeue(&pq);
+
+    display(&pq);
+
+    printf("Front element: %d\n", peek(&pq));
+
+    int searchKey = 20;
+    int position = search(&pq, searchKey);
+    if (position != -1) {
+        printf("Element %d found at position %d\n", searchKey, position);
+    } else {
+        printf("Element %d not found\n", searchKey);
+    }
+
+    return 0;
+}

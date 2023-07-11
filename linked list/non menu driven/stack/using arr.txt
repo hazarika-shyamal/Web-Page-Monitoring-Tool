@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_SIZE 100
+
+struct Stack {
+    int arr[MAX_SIZE];
+    int top;
+};
+
+void initializeStack(struct Stack* stack) {
+    stack->top = -1;
+}
+
+int isEmpty(struct Stack* stack) {
+    return (stack->top == -1);
+}
+
+int isFull(struct Stack* stack) {
+    return (stack->top == MAX_SIZE - 1);
+}
+
+void push(struct Stack* stack, int data) {
+    if (isFull(stack)) {
+        printf("Stack is full! Cannot perform push operation.\n");
+        return;
+    }
+    stack->top++;
+    stack->arr[stack->top] = data;
+    printf("Pushed element: %d\n", data);
+}
+
+void pop(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty! Cannot perform pop operation.\n");
+        return;
+    }
+    int poppedElement = stack->arr[stack->top];
+    stack->top--;
+    printf("Popped element: %d\n", poppedElement);
+}
+
+int peek(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty! Cannot perform peek operation.\n");
+        return -1;
+    }
+    return stack->arr[stack->top];
+}
+
+int search(struct Stack* stack, int key) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty! Cannot perform search operation.\n");
+        return -1;
+    }
+    int position = 1;
+    for (int i = stack->top; i >= 0; i--) {
+        if (stack->arr[i] == key) {
+            return position;
+        }
+        position++;
+    }
+    return -1;
+}
+
+void display(struct Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty!\n");
+        return;
+    }
+    printf("Stack elements: ");
+    for (int i = stack->top; i >= 0; i--) {
+        printf("%d ", stack->arr[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Stack stack;
+    initializeStack(&stack);
+
+    push(&stack, 10);
+    push(&stack, 20);
+    push(&stack, 30);
+    push(&stack, 40);
+
+    display(&stack);
+
+    printf("Top element: %d\n", peek(&stack));
+
+    pop(&stack);
+    pop(&stack);
+
+    display(&stack);
+
+    printf("Top element: %d\n", peek(&stack));
+
+    int searchKey = 20;
+    int position = search(&stack, searchKey);
+    if (position != -1) {
+        printf("Element %d found at position %d\n", searchKey, position);
+    } else {
+        printf("Element %d not found\n", searchKey);
+    }
+
+    return 0;
+}

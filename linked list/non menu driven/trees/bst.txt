@@ -1,0 +1,174 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+
+
+//same for linked list
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    if (newNode == NULL) {
+        printf("Memory allocation failed!");
+        exit(0);
+    }
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+
+//first checking the root element ,then checkign the value of the root than its greater then or less than the node present in the node ,according to present value its inserting to the left or right
+struct Node* insert(struct Node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    } else {
+        if (data <= root->data) {
+            root->left = insert(root->left, data);
+        } else {
+            root->right = insert(root->right, data);
+        }
+        return root;
+    }
+}
+
+
+//same goe,depending on the value 1st checking for the left then goes for the right nodes  in tree
+struct Node* search(struct Node* root, int key) {
+    if (root == NULL || root->data == key) {
+        return root;
+    } else if (key < root->data) {
+        return search(root->left, key);
+    } else {
+        return search(root->right, key);
+    }
+}
+
+
+//its mainly done to the tree that it first go through all the left nodes ...why its checking only left
+struct Node* findMinimum(struct Node* root) {
+    if (root == NULL) {
+        return NULL;
+    } else if (root->left == NULL) {
+        return root;
+    } else {
+        return findMinimum(root->left);
+    }
+}
+
+struct Node* delete(struct Node* root, int key) {
+    if (root == NULL) {
+        return root;
+    } else if (key < root->data) {
+        root->left = delete(root->left, key);
+    } else if (key > root->data) {
+        root->right = delete(root->right, key);
+    } else {
+        // Case 1: No child or only one child
+        if (root->left == NULL) {
+            struct Node* temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            struct Node* temp = root->left;
+            free(root);
+            return temp;
+        }
+        // Case 2: Two children
+        struct Node* minRight = findMinimum(root->right);
+        root->data = minRight->data;
+        root->right = delete(root->right, minRight->data);
+    }
+    return root;
+}
+
+void preorderTraversal(struct Node* root) {
+    if (root == NULL) {
+        return;
+    }
+    printf("%d ", root->data);
+    preorderTraversal(root->left);
+    preorderTraversal(root->right);
+}
+
+void inorderTraversal(struct Node* root) {
+    if (root == NULL) {
+        return;
+    }
+    inorderTraversal(root->left);
+    printf("%d ", root->data);
+    inorderTraversal(root->right);
+}
+
+void postorderTraversal(struct Node* root) {
+    if (root == NULL) {
+        return;
+    }
+    postorderTraversal(root->left);
+    postorderTraversal(root->right);
+    printf("%d ", root->data);
+}
+
+void freeTree(struct Node* root) {
+    if (root == NULL) {
+        return;
+    }
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
+int main() {
+    struct Node* root = NULL;
+
+    root = insert(root, 50);
+    root = insert(root, 30);
+    root = insert(root, 20);
+    root = insert(root, 40);
+    root = insert(root, 70);
+    root = insert(root, 60);
+    root = insert(root, 80);
+
+    printf("Preorder traversal: ");
+    preorderTraversal(root);
+    printf("\n");
+
+    printf("Inorder traversal: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    printf("Postorder traversal: ");
+    postorderTraversal(root);
+    printf("\n");
+
+    int key = 40;
+    struct Node* result = search(root, key);
+    if (result != NULL) {
+        printf("%d found in the tree.\n", key);
+    } else {
+        printf("%d not found in the tree.\n", key);
+    }
+
+    key = 55;
+    result = search(root, key);
+    if (result != NULL) {
+        printf("%d found in the tree.\n", key);
+    } else {
+        printf("%d not found in the tree.\n", key);
+    }
+
+    key = 30;
+    root = delete(root, key);
+    printf("After deleting %d:\n", key);
+    printf("Inorder traversal: ");
+    inorderTraversal(root);
+    printf("\n");
+
+    freeTree(root);
+
+    return 0;
+}
